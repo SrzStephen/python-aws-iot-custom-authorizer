@@ -1,6 +1,5 @@
 from base64 import b64decode
 from datetime import datetime, timedelta
-from json import dumps
 from os import environ
 from typing import List, Optional, Tuple
 from uuid import uuid4
@@ -58,10 +57,7 @@ def get_details_for_client_id(client_id: str, table: Table) -> DynamoModel:
 
 
 def generate_policy(
-    dynamoData: Optional[DynamoModel],
-    authenticated: bool,
-    client_id: str,
-    password: Optional[str] = None,
+    dynamoData: Optional[DynamoModel], authenticated: bool, client_id: str
 ) -> PolicyDocument:
     def format_principal(s: str) -> str:
         # Member must satisfy ([a-zA-Z0-9]){1,128}
@@ -153,7 +149,6 @@ def lambda_handler(event, context):
         dynamoData=data,
         authenticated=check_password(data, details),
         client_id=details.clientId,
-        password=details.password,
     ).dict()
     print(returned_policy)
     return returned_policy
