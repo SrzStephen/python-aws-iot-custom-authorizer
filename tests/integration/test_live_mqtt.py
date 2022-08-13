@@ -139,7 +139,6 @@ def test_mqtt_client_paho(stack_params, generate_table, get_aws_ca_cert):
         return f"{username}?x-amz-customauthorizer-name={url_parse.quote_plus(stack_params['UnsignedAuthorizerName'])}"
 
     mqtt_client = mqtt.Client(client_id=test_client)
-    mqtt_client.enable_logger(logger)
     # Add in ALPN and support AWS CA
     ssl_context = ssl.create_default_context()
     ssl_context.set_alpn_protocols(["mqtt"])
