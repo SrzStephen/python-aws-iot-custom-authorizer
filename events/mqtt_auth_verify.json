@@ -1,0 +1,17 @@
+{
+  "protocolData": {
+    "mqtt": {
+      "username": "USER_NAME",
+      "password": "PASS_WORD",
+      "clientId": "CLIENT_NAME"
+    }
+  },
+  "protocols": [
+    "mqtt"
+  ],
+  "signatureVerified": true,
+  "token": "tokenName",
+  "connectionMetadata": {
+    "id": "d0adaaa7-b22d-4545-923c-68a7ae2e337c"
+  }
+}

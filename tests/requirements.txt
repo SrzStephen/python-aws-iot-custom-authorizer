@@ -1,0 +1,11 @@
+awsiotsdk==1.11.3
+boto3
+moto==3.1.17
+mypy-boto3-cloudformation==1.24.36.post1
+mypy-boto3-dynamodb==1.24.36.post1
+mypy-boto3-iot==1.24.46
+mypy-boto3-kms==1.24.36.post1
+mypy-boto3-s3==1.24.36.post1
+paho-mqtt==1.6.1
+pytest
+pytest-mock
