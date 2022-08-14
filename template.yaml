@@ -7,6 +7,21 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  StackName:
+    Type: String
+    Default: 'authorizer'
+    Description: "Name of the stack to be deployed"
+
+  EnvironmentType:
+    Type: String
+    AllowedValues:
+      - Dev
+      - Test
+      - QA
+      - Prod
+    Default: 'Dev'
+
 Resources:
 
   UnsignedAuthorizerPermission:
@@ -60,6 +75,27 @@ Resources:
       SigningDisabled: True
       Status: "ACTIVE"
 
+  CIRole:
+    # read, write, delete entry to table
+    # iot test invoke authorizer, get endpoint
+    Type: AWS::IAM::Role
+    Properties: # Todo: Dynamo dynamodb:LeadingKeys to prevent CI from mucking with prod
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - "iot:DescribeEndpoint"
+              - "iot:TestInvokeAuthorizer"
+            Resource: "*"
+          - Effect: Allow
+            Action:
+              - "dynamodb:GetItem"
+              - "dynamodb:PutItem"
+              - "dynamodb:Query"
+              - "dynamodb:DeleteItem"
+            Resource: !GetAtt Table.Arn
+
 Outputs:
   UnsignedAuthorizerName:
     Description: "Name of unsigned authorizer"
@@ -72,3 +108,7 @@ Outputs:
   TableName:
     Description: "Table name that stores AWS Authorizer Credentials"
     Value: !Ref Table
+
+  CiARN:
+    Description: "Role for CI process to assume"
+    Value: !GetAtt  CIRole.Arn
