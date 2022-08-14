@@ -60,7 +60,7 @@ In my case this is generally something like
         {
           "Action": "iot:Connect",
           "Effect": "Allow",
-          "Resource": "*"
+          "Resource": "arn:aws:iot:ap-southeast-2:MY_ID:client/CLIENT_ID"
         },
         {
           "Action": "iot:Receive",
