@@ -45,6 +45,45 @@ An AWS custom authorizer basically gets the credentials forwarded from AWS IOT C
 The Authorizer (Lambda) then has the job of figuring out whether a device should be authorized to connect, and what
 IOT policies it should have.
 
+In my case this is generally something like
+```json
+{
+  "isAuthenticated": true,
+  "password": "PasswordHere",
+  "principalId": "PrincipalHere",
+  "disconnectAfterInSeconds": 3600,
+  "refreshAfterInSeconds": 3600,
+  "policyDocuments": [
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Action": "iot:Connect",
+          "Effect": "Allow",
+          "Resource": "*"
+        },
+        {
+          "Action": "iot:Receive",
+          "Effect": "Allow",
+          "Resource": "arn:aws:iot:ap-southeast-2:MY_ID:topic/integration/cbb38fe8/read"
+        },
+        {
+          "Action": "iot:Subscribe",
+          "Effect": "Allow",
+          "Resource": "arn:aws:iot:ap-southeast-2:MY_ID:topicfilter/integration/cbb38fe8/read"
+        },
+        {
+          "Action": "iot:Publish",
+          "Effect": "Allow",
+          "Resource": "arn:aws:iot:ap-southeast-2:MY_ID:topic/integration/cbb38fe8/write"
+        }
+      ]
+    }
+  ]
+}
+```
+
+
 ### Implementation
 
 I wanted a simple serverless solution to maintain and design because I'm kind of lazy.

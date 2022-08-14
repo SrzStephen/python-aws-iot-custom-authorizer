@@ -79,15 +79,6 @@ def generate_policy(
                     )
                 )
             )
-            policy_statements.append(
-                PolicyStatement(
-                    **dict(
-                        Action="iot:Receive",
-                        Effect="Allow",
-                        Resource=f"{base_iot_string}:client/{dynamoData.Client_ID}",
-                    )
-                )
-            )
         if dynamoData.allow_read:
             policy_statements.append(
                 PolicyStatement(
@@ -95,6 +86,15 @@ def generate_policy(
                         Action="iot:Subscribe",
                         Effect="Allow",
                         Resource=f"{base_iot_string}:topicfilter/{dynamoData.read_topic}",
+                    )
+                )
+            )
+            policy_statements.append(
+                PolicyStatement(
+                    **dict(
+                        Action="iot:Receive",
+                        Effect="Allow",
+                        Resource=f"{base_iot_string}:topic/{dynamoData.read_topic}",
                     )
                 )
             )
