@@ -20,7 +20,9 @@ jobs:
           pip install -r src/authorizer/requirements.txt
           pip install -r tests/requirements.txt
       - name: pytest unit tests
-        run: pytest unit
+        run: |
+          export PYTHONPATH="${PYTHONPATH}:${PWD}"
+          pytest tests/unit
 
   sam_build:
     strategy:
