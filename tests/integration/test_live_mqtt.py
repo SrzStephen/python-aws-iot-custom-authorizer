@@ -35,7 +35,6 @@ def uuid_partial() -> str:
 
 
 def get_val() -> str:
-    # TestInvokeAuthorizer principalId failed to satisfy constraint: Member must satisfy ([a-zA-Z0-9]){1,128}
     return f"int{time_format}"
 
 

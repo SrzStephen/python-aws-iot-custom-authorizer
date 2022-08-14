@@ -1,11 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  mqtt_custom_auth
+  AWS IOT Custom Authorizer with Python 3.9+ using AWS SAM
 
-  Sample SAM Template for mqtt_custom_auth
-
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
@@ -21,7 +18,7 @@ Resources:
       FunctionName: !GetAtt AuthFunction.Arn
 
   AuthFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: src/authorizer
       Handler: authorizer.app.lambda_handler
@@ -69,9 +66,9 @@ Outputs:
     Value: !Ref UnsignedAuthorizer
 
   UnsignedAuthorizerStatus:
-    Description: "Unsigned authorizer active"
+    Description: "Unsigned authorizer active. Currently a placeholder value to be used when I create a secure authorizer"
     Value: true
 
   TableName:
-    Description: "Table name"
+    Description: "Table name that stores AWS Authorizer Credentials"
     Value: !Ref Table

@@ -125,12 +125,10 @@ def generate_policy(
 
 
 def lambda_handler(event, context):
-    print(event)
     input_val = AuthorizerInput(**event)
     details = input_val.protocolData.mqtt
     # you're probably sending the auth header through, it's not actually part of the username
     details.username = details.username.split("?x-amz-customauthorizer-name")[0]
-    print(details)
 
     if environ.get("REQUIRE_SIGNATURE_VERIFICATION", False):
         if not input_val.signatureVerified:
@@ -138,7 +136,6 @@ def lambda_handler(event, context):
                 authenticated=False, dynamoData=None, client_id=details.clientId
             ).dict()
     client, table = get_resources()
-    print(details)
     try:
         data = get_details_for_client_id(details.clientId, table)
     except KeyError:  # User ID not found in table
