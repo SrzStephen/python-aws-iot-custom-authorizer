@@ -8,11 +8,6 @@ Globals:
     Timeout: 3
 
 Parameters:
-  StackName:
-    Type: String
-    Default: 'authorizer'
-    Description: "Name of the stack to be deployed"
-
   EnvironmentType:
     Type: String
     AllowedValues:
@@ -52,6 +47,11 @@ Resources:
                 - "dynamodb:Get*"
                 - "dynamodb:Query"
               Resource: !GetAtt Table.Arn
+#      Tags:
+#        - Key: Project
+#          Value: !Sub ${AWS::StackName}
+#        - Key: EnvironmentType
+#          Value: !Ref EnvironmentType
   Table:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -65,36 +65,53 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
       TableName: "MQTTAuthTable"
+      Tags:
+        - Key: Project
+          Value: !Sub ${AWS::StackName}
+        - Key: EnvironmentType
+          Value: !Ref EnvironmentType
 
   UnsignedAuthorizer:
     Type: AWS::IoT::Authorizer
     Properties:
       AuthorizerFunctionArn: !GetAtt AuthFunction.Arn
-      AuthorizerName: "MqttAuth-Unsigned"
+      AuthorizerName: !Sub
+        - "${AWS::StackName}-${env_type}"
+        - env_type: !Ref EnvironmentType
       EnableCachingForHttp: true
       SigningDisabled: True
       Status: "ACTIVE"
+      Tags:
+        - Key: Project
+          Value: !Sub ${AWS::StackName}
+        - Key: EnvironmentType
+          Value: !Ref EnvironmentType
 
-  CIRole:
-    # read, write, delete entry to table
-    # iot test invoke authorizer, get endpoint
-    Type: AWS::IAM::Role
-    Properties: # Todo: Dynamo dynamodb:LeadingKeys to prevent CI from mucking with prod
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action:
-              - "iot:DescribeEndpoint"
-              - "iot:TestInvokeAuthorizer"
-            Resource: "*"
-          - Effect: Allow
-            Action:
-              - "dynamodb:GetItem"
-              - "dynamodb:PutItem"
-              - "dynamodb:Query"
-              - "dynamodb:DeleteItem"
-            Resource: !GetAtt Table.Arn
+#  CIRole:
+#    # read, write, delete entry to table
+#    # iot test invoke authorizer, get endpoint
+#    Type: AWS::IAM::Role
+#    Properties: # Todo: Dynamo dynamodb:LeadingKeys to prevent CI from mucking with prod
+#      AssumeRolePolicyDocument:
+#        Version: "2012-10-17"
+#        Statement:
+#          - Effect: Allow
+#            Action:
+#              - "iot:DescribeEndpoint"
+#              - "iot:TestInvokeAuthorizer"
+#            Resource: "*"
+#          - Effect: Allow
+#            Action:
+#              - "dynamodb:GetItem"
+#              - "dynamodb:PutItem"
+#              - "dynamodb:Query"
+#              - "dynamodb:DeleteItem"
+#            Resource: !GetAtt Table.Arn
+#      Tags:
+#        - Key: Project
+#          Value: !Sub ${AWS::StackName}
+#        - Key: EnvironmentType
+#          Value: !Ref EnvironmentType
 
 Outputs:
   UnsignedAuthorizerName:
