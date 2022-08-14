@@ -39,4 +39,3 @@ jobs:
       - uses: aws-actions/setup-sam@v1
       - run: | 
           sam build
-          sam validate
