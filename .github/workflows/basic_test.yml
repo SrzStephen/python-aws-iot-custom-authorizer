@@ -22,7 +22,7 @@ jobs:
       - name: pytest unit tests
         run: |
           export PYTHONPATH="${PYTHONPATH}:${PWD}"
-          export AWS_REGION="ap-southeast-2"
+          export AWS_DEFAULT_REGION="ap-southeast-2"
           pytest tests/unit
 
   sam_build:
