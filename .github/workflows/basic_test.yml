@@ -37,5 +37,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: aws-actions/setup-sam@v1
-      - run: sam build
-      - run: sam validate
+      - run: | 
+          sam build
+          sam validate
