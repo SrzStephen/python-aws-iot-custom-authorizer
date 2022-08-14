@@ -1,7 +1,7 @@
 # Lambda Authorizer
 
 [![.github/workflows/basic_test.yml](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/basic_test.yml/badge.svg?branch=main)](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/basic_test.yml)
-
+[![.github/workflows/arduino_test.yml](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/arduino_test.yml/badge.svg)](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/arduino_test.yml)
 ## Motivation
 
 AWS normally needs you to
