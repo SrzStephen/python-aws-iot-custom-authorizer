@@ -2,6 +2,7 @@
 
 [![.github/workflows/basic_test.yml](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/basic_test.yml/badge.svg?branch=main)](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/basic_test.yml)
 [![.github/workflows/arduino_test.yml](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/arduino_test.yml/badge.svg)](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/arduino_test.yml)
+
 ## Motivation
 
 AWS normally needs you to
@@ -33,10 +34,12 @@ sam build
 sam deploy --guided
 ````
 
-Then insert your credentials into dynamodb to be used by the authenticator,
-either [via the console or CLI](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/getting-started-step-2.html)
-.
-For a CLI example:
+I would then suggest running the test suite in `tests/integration` to make sure that your deployment worked properly.
+You will probably need to set an environment variable `STACK_NAME` for the name of the stack so that the integration
+tests can find the resources that it needs to run its tests.
+
+Once you've verified that all this works, you'll probably want to insert some credentials into your DynamoDB table/
+
 
 Get your table name from the output of the stack you just deployed
 
@@ -44,12 +47,22 @@ Get your table name from the output of the stack you just deployed
 aws cloudformation describe-stacks --stack-name STACK_NAME-HERE
 ```
 
+Insert your credentials into dynamodb to be used by the authenticator,
+either [via the console or CLI](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/getting-started-step-2.html)
+. This example uses the CLI.
+
 ```zsh
 aws dynamodb execute-statement --statement "INSERT INTO TALBENAME_FROM_PREVIOUS \
 Value \
 {'Client_ID':'TestClientID','Password':'TestPasswordChangeme','Username':'TestUserChangeMe', 
 'allow_read': true, 'allow_write':true,'allow_connect':true,'read_topic':'testopic/read',
 'write_topic':'testtopic/write'}"
+```
+
+You're probably going to need your `ATS` IOT endpoint to know what to connect to (this is the only endpoint supported).
+
+```zsh
+aws iot describe-endpoint --endpoint-type "iot:Data-ATS"
 ```
 
 ### Connection
@@ -88,6 +101,7 @@ The AWS IOT Custom Authorizer recieves credentials sent by the MQTT client on co
   }
 }
 ```
+
 The Authorizer (Lambda) then has the job of figuring out whether a device should be authorized to connect, and what
 IOT policies it should have.
 

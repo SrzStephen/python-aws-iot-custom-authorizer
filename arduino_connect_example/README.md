@@ -27,8 +27,10 @@ For convenience the [AWS ECC 256 bit CA3 Key](https://docs.aws.amazon.com/iot/la
 has already been included since it's not a secret.
 
 # Issues
-AWS suggests that the `x-amz-customauthorizer-name` gets URL encoded. I haven't got around to implementing this.
-I haven't implemented this but i'd expect if you start having spaces in your authorizer name then you'd have an issue.
+AWS suggests that the `x-amz-customauthorizer-name` gets URL encoded.
+I haven't implemented this but I'd expect if you start having spaces or special characters in your authorizer name,
+but I don't hence it being a low priority thing for me to look at.
 
 There is currently no support for signature verification, in theory this should be pretty easy (add it to 
-`mqtt_modified_username`) as suggested by AWS in their [connection guide](https://docs.aws.amazon.com/iot/latest/developerguide/custom-auth.html#custom-auth-mqtt)
+`mqtt_modified_username`) as suggested by AWS in their [connection guide](https://docs.aws.amazon.com/iot/latest/developerguide/custom-auth.html#custom-auth-mqtt).
+I've explained the implications of this over in the [README in the python-aws-iot-custom-authorizer](https://github.com/SrzStephen/python-aws-iot-custom-authorizer)
