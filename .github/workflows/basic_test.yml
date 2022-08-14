@@ -1,0 +1,36 @@
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  build:
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10" ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: aws-actions/setup-sam@v1
+      - run: sam build
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/authorizer/requirements.txt
+          pip install -r tests/requirements.txt
+      - name: pytest unit tests
+        run: pytest unit
+
+  sam_build:
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10" ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: aws-actions/setup-sam@v1
+      - run: sam build
