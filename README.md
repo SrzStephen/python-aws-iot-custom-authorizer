@@ -1,5 +1,5 @@
 # Lambda Authorizer
-
+[![.github/workflows/basic_test.yml](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/basic_test.yml/badge.svg?branch=main)](https://github.com/SrzStephen/python-aws-iot-custom-authorizer/actions/workflows/basic_test.yml)
 ### Motivation
 
 AWS normally needs you to use [x509 certificate based authentication](https://docs.aws.amazon.com/iot/latest/developerguide/x509-client-certs.html)
