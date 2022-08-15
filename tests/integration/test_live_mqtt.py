@@ -10,9 +10,10 @@ from urllib import parse as url_parse
 from uuid import uuid4
 
 import boto3
+import functools
 import paho.mqtt.client as mqtt
 import pytest
-from awscrt.mqtt import QoS
+from awscrt.mqtt import QoS, Connection
 from awsiot.mqtt_connection_builder import direct_with_custom_authorizer
 from mypy_boto3_cloudformation import CloudFormationServiceResource
 from mypy_boto3_dynamodb import DynamoDBServiceResource
@@ -28,6 +29,35 @@ time_format = datetime.now().strftime("%m%d%Y%H%M")
 aws_endpoint = iot_client.describe_endpoint(endpointType="iot:Data-ATS")[
     "endpointAddress"
 ]
+
+
+def calltracker(func):
+    # from https://dzone.com/articles/python-how-to-tell-if-a-function-has-been-called
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        wrapper.has_been_called = True
+        return func(*args, **kwargs)
+
+    wrapper.has_been_called = False
+    return wrapper
+
+
+@calltracker
+def function_1_calltracker():
+    pass
+
+
+@calltracker
+def function_2_caltracker():
+    pass
+
+
+def test_calltracker():
+    function_1_calltracker()
+    assert function_1_calltracker.has_been_called
+    assert function_2_caltracker.has_been_called is False
+    function_2_caltracker()
+    assert function_2_caltracker.has_been_called
 
 
 def uuid_partial() -> str:
@@ -117,20 +147,8 @@ def get_aws_ca_cert() -> Path:
     aws_ca.unlink()
 
 
-def on_connect(client, userdata, flags, rc):
-    print(client)
-    print("Connected with result code " + str(rc))
-    print(userdata)
-    print(flags)
-    global PAHO_WAS_CONNECTED
-    PAHO_WAS_CONNECTED = True
-
-
-# Gets mutated by the function above, used to record connection status for paho
-PAHO_WAS_CONNECTED = False
-
-
-def test_mqtt_client_paho(stack_params, generate_table, get_aws_ca_cert):
+@pytest.fixture(scope="function")
+def paho_client(get_aws_ca_cert, generate_table, stack_params) -> mqtt.Client:
     # Note this will do TLS auth
     def username_and_auth(username: str) -> str:
         # https://docs.aws.amazon.com/iot/latest/developerguide/config-custom-auth.html
@@ -146,15 +164,51 @@ def test_mqtt_client_paho(stack_params, generate_table, get_aws_ca_cert):
     mqtt_client.username_pw_set(
         username=username_and_auth(test_user), password=test_pass
     )
-    mqtt_client.on_connect = on_connect
-    mqtt_client.connect(host=aws_endpoint, port=443, keepalive=60)
-    mqtt_client.loop_start()
+    return mqtt_client
+
+
+@calltracker
+def paho_on_connect(*args, **kwargs):
+    pass
+
+
+@calltracker
+def paho_on_publish(client, userdata, mid):
+    pass
+
+
+@calltracker
+def paho_on_receive(**kwargs):
+    pass
+
+
+def test_paho_connect(stack_params, generate_table, paho_client):
+    # paho_client.on_connect = paho_on_connect
+    paho_client.connect(host=aws_endpoint, port=443, keepalive=60)
+    paho_client.loop_start()
     sleep(20)
-    mqtt_client.publish(
+    paho_client.publish(
         topic=f"/{test_topic}/write",
         payload=dict(message="Connected with Paho").__str__(),
     )
-    assert PAHO_WAS_CONNECTED is True
+    assert paho_on_connect.has_been_called
+
+
+def test_paho_write(stack_params, generate_table, paho_client):
+    paho_client.on_publish = paho_on_publish
+    paho_client.connect(host=aws_endpoint, port=443, keepalive=60)
+    paho_client.loop_start()
+    sleep(20)
+    paho_client.publish(
+        topic=f"/{test_topic}/write",
+        payload=dict(message="Connected with Paho").__str__(),
+    )
+    assert paho_on_publish.has_been_called
+
+
+@pytest.fixture(scope="function")
+def aws_iot_connection(get_aws_ca_cert) -> Connection:
+    pass
 
 
 def test_mqtt_client(stack_params, generate_table, get_aws_ca_cert):
