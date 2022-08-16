@@ -26,7 +26,7 @@ def test_unsigned_invalid(stack_params: stack_params):
         assert response["isAuthenticated"] is False
 
 
-@pytest.mark_dependency()
+@pytest.mark.dependency()
 def test_unsigned_valid(stack_params: stack_params, generate_table: generate_table):
     if stack_params["UnsignedAuthorizerStatus"]:
         response = iot_client.test_invoke_authorizer(

@@ -40,7 +40,6 @@ tests can find the resources that it needs to run its tests.
 
 Once you've verified that all this works, you'll probably want to insert some credentials into your DynamoDB table/
 
-
 Get your table name from the output of the stack you just deployed
 
 ```zsh
@@ -169,13 +168,20 @@ data for testing purposes as easy as possible.
 
 ### Integration testing
 
-The integration testing calls the `test-invoke-lambda-authorizer` to ensure that the authorizer works as expected as
-far as being set up, and whether it provides the right response (Including whether the Policy Document is correctly
-formed).
+The integration testing in `integration/test_invoke` calls the `test-invoke-lambda-authorizer` to ensure that the
+authorizer works as expected as far as being set up, and whether it provides the right response (Including whether the
+Policy Document is correctly formed).
 
-The integration testing also has two basic tests for the `aws-iot-sdk` and `paho` clients to ensure that a device
-can properly connect without the abstraction layer provided by `test-invoke-lambda-authorizer`. This also serves as
-documentation for how to connect using the custom authorizer.
+The integration testing also contains tests for two commonly used python libraries,
+
+* [AWS IoT Device SDK v2 for Python](https://github.com/aws/aws-iot-device-sdk-python-v2)
+* [Paho](https://pypi.org/project/paho-mqtt/)
+
+To test to make sure that I've understood how to connect properly, and to act as documentation for how to connect
+using the custom authorizer because I always forget.
+
+A C example (not run as a test because testing arduino stuff is complicated) is available in `arduino_connect_example`
+using [PubSubClient](https://github.com/knolleary/pubsubclient).
 
 ## What Next
 

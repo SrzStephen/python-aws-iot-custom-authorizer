@@ -76,7 +76,7 @@ def get_aws_ca_cert() -> Path:
     )
     yield aws_ca
     # teardown
-    aws_ca.unlink()
+    aws_ca.unlink(missing_ok=True)
 
 
 @pytest.fixture(scope="session")
