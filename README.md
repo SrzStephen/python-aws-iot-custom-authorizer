@@ -21,7 +21,7 @@ to handle the authentication side of things for you.
 I found that the documentation for how to create and use the custom authorizer was a bit lacking, particularly because
 there are a few gotchas when it comes
 to [MQTT authentication](https://docs.aws.amazon.com/iot/latest/developerguide/custom-auth.html),
-and it seems like some of the stackoverflow questions are no longer relevent due to things like ATS endpoint changes.
+and it seems like some of the stackoverflow questions are no longer relevant due to things like ATS endpoint changes.
 
 ## Usage
 
@@ -212,3 +212,36 @@ right now.
 
 THE CLI command to add a new entry to the table is a bit clunky, eventually I'll get around to setting up a
 [click](https://click.palletsprojects.com/en/8.1.x/) CLI to make it a bit easier.
+
+### QOS other than 0
+
+[QOS's other than zero require different permissions](https://docs.aws.amazon.com/iot/latest/developerguide/retained-message-policy-examples.html)
+that I haven't got around to adding in yet. It's easy enough to do it, I just haven't got around to it yet.
+
+## Will Messages
+
+AWS has the concept
+of [will message](https://docs.aws.amazon.com/iot/latest/developerguide/retained-message-policy-examples.html#retained-message-policy-examples-publish-lwt)
+`topic/will`, I need to sort that out at some point (static permission) but with my lambda starting to get a bit big
+I'd probably want to do some refactoring before adding in new things.
+
+## Subscription/Message Receive Note
+
+It's worth having a read of the table
+in [Publish/Subscribe policy examples](https://docs.aws.amazon.com/iot/latest/developerguide/pub-sub-policy.html)
+and understand the implications of the table.
+
+Some of the usual wildcards in MQTT subscription strings (`#` and `+`) are treated as regular characters in topic
+filters and won't work when trying to use AWS IOT core.
+
+From AWS docs:
+
+| Wildcard character | Is MQTT wildcard character | Example in MQTT | Is AWS IoT Core policy wildcard character | Example in AWS IoT Core policies for MQTT clients | 
+| --- | --- | --- | --- | --- | 
+| \# | Yes | some/\# | No | N/A | 
+| \+ | Yes | some/\+/topic | No | N/A | 
+| \* | No | N/A | Yes | topicfilter/some/\*/topic  | 
+| ? | No | N/A | Yes |  `topic/some/?????/topic` `topicfilter/some/sensor???/topic`  | 
+
+
+
