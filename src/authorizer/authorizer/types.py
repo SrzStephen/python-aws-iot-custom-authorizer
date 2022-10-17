@@ -2,7 +2,7 @@ from typing import List, Literal, Optional
 
 from pydantic import BaseModel, validator
 
-iot_effect = Literal[
+iot_action = Literal[
     "iot:Connect",
     "iot:GetRetainedMessage",
     "iot:ListRetainedMessages",
@@ -18,7 +18,7 @@ iot_effect = Literal[
 
 
 class PolicyStatement(BaseModel):
-    Action: iot_effect
+    Action: iot_action
     Effect: Literal["Allow", "Deny"]
     Resource: str
 
